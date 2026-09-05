@@ -7,8 +7,15 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/guest.css">
     <style>
-        /* 1. ANTI-EYE FATIGUE SYSTEM (Nyaman di mata saat acara malam) */
-        body {
+        /* 1. ANTI-EYE FATIGUE SYSTEM & FULLSCREEN FIX (Misi 1) */
+        body, html {
+            margin: 0;
+            padding: 0;
+            /* Menggunakan dvh agar tidak terpotong URL bar di Safari iOS */
+            height: 100vh;
+            height: 100dvh; 
+            width: 100vw;
+            overflow-x: hidden; /* Hanya matikan scroll horizontal, biarkan vertical jika butuh */
             background-color: #0b0b0e !important; 
             color: #eaeaea !important; 
         }
@@ -89,6 +96,51 @@
             margin-top: auto;
             text-transform: uppercase;
         }
+
+        /* 5. OVERLAY ERROR KAMERA (Misi 2) */
+        #camera-error-overlay {
+            display: none; /* Disembunyikan secara default */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100dvh;
+            background-color: rgba(0, 0, 0, 0.95);
+            color: white;
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #camera-error-overlay h2 {
+            color: #ff4444;
+            margin-bottom: 15px;
+            font-family: var(--font-heading);
+        }
+
+        #camera-error-overlay p {
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            color: #eaeaea;
+        }
+
+        #retry-camera-btn {
+            margin-top: 25px;
+            padding: 12px 24px;
+            background-color: var(--accent-color, #ccff00);
+            color: #000;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 0 15px rgba(204, 255, 0, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -97,7 +149,6 @@
 
     <div class="app-container">
         
-        <!-- MICROCOPY INTERAKTIF DI SETIAP SECTION -->
         <section id="step-frame" class="step-section active">
             <div class="header text-center adjust-header" style="margin-top: 20px;">
                 <h2 style="color: var(--accent-color);">Pilih Frame</h2>
@@ -134,7 +185,7 @@
                 <button class="timer-btn" data-time="10">10s</button>
             </div>
 
-            <div class="camera-wrapper" style="margin-top: 10px; margin-bottom: 10px;">
+            <div class="camera-wrapper" style="margin-top: 10px; margin-bottom: 10px; position: relative;">
                 <video id="cameraStream" autoplay playsinline></video>
                 <div id="countdownOverlay" class="countdown-overlay" style="display: none;">3</div>
                 
@@ -142,6 +193,15 @@
                 <div class="camera-reticle top-right"></div>
                 <div class="camera-reticle bottom-left"></div>
                 <div class="camera-reticle bottom-right"></div>
+
+                <div id="camera-error-overlay">
+                    <h2>📸 Kamera Terkunci!</h2>
+                    <p>Layar ini butuh akses kamera untuk memotret.</p>
+                    <br>
+                    <p><strong>Solusi:</strong> Klik "Izinkan" / "Allow" saat peramban meminta akses kamera.</p>
+                    <p><small style="color: #bbb;">(Khusus iOS/Safari: Cek ikon <b>aA</b> di URL bar atas dan pastikan kamera tidak diblokir)</small></p>
+                    <button id="retry-camera-btn" onclick="window.location.reload();">Muat Ulang Halaman</button>
+                </div>
             </div>
             
             <div class="filter-controls" id="filterControls">
@@ -171,7 +231,6 @@
             <div class="adjust-workspace-container">
                 <div id="adjustWorkspace" class="adjust-workspace">
                     <div id="adjustPhotoLayers"></div>
-                    <!-- Frame Overlay kini tidak menghalangi sentuhan -->
                     <img id="adjustFrameOverlay" src="" alt="Frame Overlay" style="pointer-events: none;">
                 </div>
             </div>
@@ -235,13 +294,12 @@
             <button class="btn-secondary" onclick="window.location.href='index.html'" style="margin-top: auto; margin-bottom: 20px;">Selesai & Kembali</button>
         </section>
 
-        <!-- FOOTER IDENTITAS ORGANISASI -->
         <div class="legal-footer"> Copyright © 2026 CHORUM</div>
 
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
     <script src="js/api.js"></script>
-    <script src="js/guest.js?v=7.0"></script>
+    <script src="js/guest.js?v=8.0"></script>
 </body>
 </html>
