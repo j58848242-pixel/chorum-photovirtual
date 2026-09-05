@@ -50,8 +50,11 @@ const Haptic = {
 };
 
 // ==========================================
-// VARIABEL GLOBAL
+// VARIABEL GLOBAL & BASE URL DINAMIS
 // ==========================================
+// Base URL otomatis mendeteksi domain tempat web ini dijalankan
+const DYNAMIC_BASE_URL = window.location.origin + window.location.pathname.replace('guest.html', '');
+
 window.guestData = window.guestData || { selectedFrame: '', photoBase64: '' };
 let videoStream = null;
 let currentFrameIndex = 0;
@@ -117,7 +120,7 @@ btnNextFrame.addEventListener('click', () => { currentFrameIndex = (currentFrame
 btnPrevFrame.addEventListener('click', () => { currentFrameIndex = (currentFrameIndex - 1 + framesList.length) % framesList.length; updateFrameUI(); });
 
 // ==========================================
-// 3. KAMERA PRO (4K, DUAL FLASH, MICROCOPY)
+// 3. KAMERA PRO DENGAN PENANGANAN ERROR (Misi 2)
 // ==========================================
 btnConfirmFrame.addEventListener('click', () => {
     sectionFrame.classList.remove('active');
@@ -128,9 +131,15 @@ btnConfirmFrame.addEventListener('click', () => {
 });
 
 async function startCamera() {
+    const errorOverlay = document.getElementById('camera-error-overlay');
+    
+    // Sembunyikan error overlay tiap kali mencoba menghidupkan kamera
+    if(errorOverlay) errorOverlay.style.display = 'none';
+
     if (videoStream) {
         videoStream.getTracks().forEach(track => track.stop());
     }
+    
     try {
         const constraints = { 
             video: { facingMode: currentFacingMode, width: { ideal: 3840 }, height: { ideal: 2160 } }, 
@@ -142,7 +151,15 @@ async function startCamera() {
             cameraStream.play();
             cameraStream.style.transform = (currentFacingMode === 'user') ? 'scaleX(-1)' : 'scaleX(1)';
         };
-    } catch (error) { alert("Tolong izinkan akses kamera biar bisa berfoto ria."); }
+    } catch (error) { 
+        console.error("Gagal mengakses kamera:", error);
+        // Munculkan layar error interaktif (Misi 2)
+        if(errorOverlay) {
+            errorOverlay.style.display = 'flex';
+        } else {
+            alert("Tolong izinkan akses kamera biar bisa berfoto ria.");
+        }
+    }
 }
 
 btnSwitchCamera.addEventListener('click', () => {
@@ -572,7 +589,7 @@ btnConfirmAdjust.addEventListener('click', async () => {
 });
 
 // ==========================================
-// 6. GENERATOR QR CODE (URL-SAFE ARMOR)
+// 6. GENERATOR QR CODE DENGAN DYNAMIC BASE URL
 // ==========================================
 async function generateQRCode(compressedBase64) {
     qrLoading.style.display = 'block';
@@ -594,7 +611,8 @@ async function generateQRCode(compressedBase64) {
         if (result.success) {
             const imgUrl = result.data.display_url; 
             const safeBase64Data = encodeURIComponent(btoa(imgUrl));
-            const viewerUrl = `${BASE_WEB_URL}view.html?data=${safeBase64Data}`; 
+            // Gunakan DYNAMIC_BASE_URL agar QR Code cocok dengan domain baru
+            const viewerUrl = `${DYNAMIC_BASE_URL}view.html?data=${safeBase64Data}`; 
             
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(viewerUrl)}`;
             qrCodeImg.src = qrApiUrl;
