@@ -7,6 +7,11 @@
       "name": "Template CHORUM 2 Slot",
       "slots": 2,
       "url": "assets/images/frames/frame-2-slot.png"
-    }
+    {
+     "id": "frame_chorum_02",
+      "name": "Template CHORUM 3 Slot",
+      "slots": 2,
+      "url": "assets/images/frames/frame-3-slot.png"
+     }
   ]
 }
